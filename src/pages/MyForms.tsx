@@ -1,33 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import { Plus, Eye, Edit, Trash2, FileText, Calendar } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  Container,
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Button,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
+  TableHeader,
   TableRow,
-  Paper,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Alert
-} from '@mui/material';
+} from "@/components/ui/table";
 import {
-  Add as AddIcon,
-  Visibility as PreviewIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Description as FormIcon
-} from '@mui/icons-material';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from '../store/store';
@@ -100,72 +93,65 @@ const MyForms: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+    <div className="container mx-auto px-6 py-8 max-w-7xl">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           My Forms
-        </Typography>
+        </h1>
         <Button
-          variant="contained"
-          startIcon={<AddIcon />}
           onClick={handleCreateNew}
-          size="large"
-          sx={{ background: 'linear-gradient(135deg, hsl(225, 84%, 55%), hsl(280, 60%, 60%))' }}
+          className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+          size="lg"
         >
+          <Plus className="w-5 h-5 mr-2" />
           Create New Form
         </Button>
-      </Box>
+      </div>
 
       {savedForms.length === 0 ? (
-        <Card sx={{ textAlign: 'center', py: 6, background: 'var(--gradient-card)' }}>
-          <CardContent>
-            <FormIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h6" gutterBottom color="text.secondary">
-              No forms created yet
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 3 }} color="text.secondary">
-              Create your first form to get started with the form builder
-            </Typography>
+        <Card className="text-center py-12 bg-gradient-to-br from-muted/30 to-muted/10">
+          <CardContent className="space-y-6">
+            <FileText className="w-16 h-16 mx-auto text-muted-foreground/60" />
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-muted-foreground">
+                No forms created yet
+              </h3>
+              <p className="text-muted-foreground/80">
+                Create your first form to get started with the form builder
+              </p>
+            </div>
             <Button
-              variant="contained"
-              size="large"
-              startIcon={<AddIcon />}
               onClick={handleCreateNew}
-              sx={{ background: 'linear-gradient(135deg, hsl(225, 84%, 55%), hsl(280, 60%, 60%))' }}
+              size="lg"
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
             >
+              <Plus className="w-5 h-5 mr-2" />
               Create First Form
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <TableContainer 
-          component={Paper} 
-          sx={{ 
-            boxShadow: 'var(--shadow-md)',
-            borderRadius: 2,
-            overflow: 'hidden'
-          }}
-        >
+        <Card className="overflow-hidden shadow-lg">
           <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: 'primary.main' }}>
-                <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>
+            <TableHeader>
+              <TableRow className="bg-gradient-to-r from-primary to-secondary">
+                <TableHead className="text-primary-foreground font-semibold">
                   Form Name
-                </TableCell>
-                <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>
+                </TableHead>
+                <TableHead className="text-primary-foreground font-semibold">
                   Fields
-                </TableCell>
-                <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>
+                </TableHead>
+                <TableHead className="text-primary-foreground font-semibold">
                   Field Types
-                </TableCell>
-                <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>
+                </TableHead>
+                <TableHead className="text-primary-foreground font-semibold">
                   Created
-                </TableCell>
-                <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }} align="right">
+                </TableHead>
+                <TableHead className="text-primary-foreground font-semibold text-right">
                   Actions
-                </TableCell>
+                </TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody>
               {savedForms.map((form) => {
                 const fieldCounts = getFieldTypeCounts(form);
@@ -173,94 +159,103 @@ const MyForms: React.FC = () => {
                 return (
                   <TableRow 
                     key={form.id}
-                    sx={{ 
-                      '&:hover': { bgcolor: 'action.hover' },
-                      cursor: 'pointer'
-                    }}
+                    className="hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => handlePreviewForm(form)}
                   >
                     <TableCell>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      <div className="font-semibold text-foreground">
                         {form.name}
-                      </Typography>
+                      </div>
                     </TableCell>
                     
                     <TableCell>
-                      <Chip 
-                        label={`${form.fields.length} fields`}
-                        size="small"
-                        color={form.fields.length > 0 ? 'primary' : 'default'}
-                      />
+                      <Badge 
+                        variant={form.fields.length > 0 ? "default" : "secondary"}
+                        className="bg-primary/10 text-primary border-primary/20"
+                      >
+                        {form.fields.length} fields
+                      </Badge>
                     </TableCell>
                     
                     <TableCell>
-                      <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                      <div className="flex gap-1 flex-wrap">
                         {Object.entries(fieldCounts).map(([type, count]) => (
-                          <Chip
+                          <Badge
                             key={type}
-                            label={`${type} (${count})`}
-                            size="small"
-                            variant="outlined"
-                          />
+                            variant="outline"
+                            className="text-xs bg-muted/50"
+                          >
+                            {type} ({count})
+                          </Badge>
                         ))}
-                      </Box>
+                      </div>
                     </TableCell>
                     
                     <TableCell>
-                      <Typography variant="body2" color="text.secondary">
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
                         {formatDate(form.createdAt)}
-                      </Typography>
+                      </div>
                     </TableCell>
                     
-                    <TableCell align="right" onClick={e => e.stopPropagation()}>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handlePreviewForm(form)}
-                        title="Preview Form"
-                      >
-                        <PreviewIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="secondary"
-                        onClick={() => handleEditForm(form)}
-                        title="Edit Form"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDeleteForm(form)}
-                        title="Delete Form"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                    <TableCell className="text-right" onClick={e => e.stopPropagation()}>
+                      <div className="flex gap-1 justify-end">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handlePreviewForm(form)}
+                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEditForm(form)}
+                          className="h-8 w-8 p-0 hover:bg-secondary/10"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteForm(form)}
+                          className="h-8 w-8 p-0 hover:bg-destructive/10 text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
-        </TableContainer>
+        </Card>
       )}
 
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Form</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete "{formToDelete?.name}"? This action cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Form</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{formToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 };
 

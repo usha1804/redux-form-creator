@@ -1,19 +1,6 @@
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  IconButton,
-  Tooltip
-} from '@mui/material';
-import {
-  Build as BuildIcon,
-  Visibility as PreviewIcon,
-  List as ListIcon,
-  Home as HomeIcon
-} from '@mui/icons-material';
+import { Home, Hammer, Eye, FileText } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
@@ -21,56 +8,48 @@ const Header: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/create', label: 'Builder', icon: <BuildIcon /> },
-    { path: '/preview', label: 'Preview', icon: <PreviewIcon /> },
-    { path: '/myforms', label: 'My Forms', icon: <ListIcon /> }
+    { path: '/create', label: 'Builder', icon: <Hammer className="w-4 h-4" /> },
+    { path: '/preview', label: 'Preview', icon: <Eye className="w-4 h-4" /> },
+    { path: '/myforms', label: 'My Forms', icon: <FileText className="w-4 h-4" /> }
   ];
 
   return (
-    <AppBar 
-      position="sticky" 
-      sx={{ 
-        background: 'linear-gradient(135deg, hsl(225, 84%, 55%), hsl(280, 60%, 60%))',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-      }}
-    >
-      <Toolbar>
-        <IconButton
-          edge="start"
-          color="inherit"
+    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-primary to-secondary shadow-sm">
+      <div className="flex h-16 items-center px-6">
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => navigate('/')}
-          sx={{ mr: 2 }}
+          className="mr-4 text-primary-foreground hover:bg-white/10"
         >
-          <HomeIcon />
-        </IconButton>
+          <Home className="w-5 h-5 mr-2" />
+          Home
+        </Button>
         
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+        <h1 className="flex-1 text-xl font-bold text-primary-foreground">
           Dynamic Form Builder
-        </Typography>
+        </h1>
 
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <nav className="flex gap-2">
           {navItems.map((item) => (
-            <Tooltip key={item.path} title={item.label}>
-              <Button
-                color="inherit"
-                startIcon={item.icon}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  backgroundColor: location.pathname === item.path ? 'rgba(255,255,255,0.2)' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.1)'
-                  },
-                  borderRadius: 2,
-                  px: 2
-                }}
-              >
-                {item.label}
-              </Button>
-            </Tooltip>
+            <Button
+              key={item.path}
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(item.path)}
+              className={`text-primary-foreground hover:bg-white/10 ${
+                location.pathname === item.path 
+                  ? 'bg-white/20' 
+                  : ''
+              }`}
+            >
+              {item.icon}
+              <span className="ml-2">{item.label}</span>
+            </Button>
           ))}
-        </Box>
-      </Toolbar>
-    </AppBar>
+        </nav>
+      </div>
+    </header>
   );
 };
 
